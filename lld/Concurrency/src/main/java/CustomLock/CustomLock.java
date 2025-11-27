@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CustomLock {
-    private AtomicBoolean isLocked = new AtomicBoolean(false);
+    private final AtomicBoolean isLocked = new AtomicBoolean(false);
     public void lock() {
         System.out.println(Thread.currentThread().getName() + " Lock acquiring");
         System.out.println(Thread.currentThread().getName() + LocalTime.now());

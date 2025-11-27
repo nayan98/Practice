@@ -10,6 +10,8 @@ public class PubSub<T> {
     BlockingQueue<T> blockingQueue;
     ExecutorService executorService;
     Integer numOfThreads;
+    Boolean isRunning;
+
     PubSub() {
         blockingQueue = new LinkedBlockingQueue<>();
         consumerList = new CopyOnWriteArrayList<>();
@@ -18,7 +20,7 @@ public class PubSub<T> {
         for(int i = 0; i<numOfThreads; i++) {
             executorService.execute(
                 () -> {
-                    while (true) {
+                    while (isRunning) {
                         //revisit while condition
                         try {
                             T element = blockingQueue.take();
@@ -38,12 +40,19 @@ public class PubSub<T> {
                 }
             );
         }
+        isRunning = true;
     }
     public boolean offer(T t) {
+        if (!isRunning)
+            return false;
         return blockingQueue.offer(t);
     }
     public void consume(Consumer<T> consumer) {
         // Think of concurrency here
         consumerList.add(consumer);
+    }
+    public void shutdown() {
+        isRunning = false;
+        executorService.shutdown();
     }
 }
